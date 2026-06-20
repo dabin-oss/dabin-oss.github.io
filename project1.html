@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="images/other/favicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:image" content="images/other/OG.png">
+<title>Club Minish — 개발 여정 · YDB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6H65PQMK63"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-6H65PQMK63');
+</script>
+
+<style>
+/* =============================================
+   RESET & BASE (index.html 동일)
+   ============================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0c10;
+  --bg2: #0f1218;
+  --bg3: #151a22;
+  --bg-card: #12161e;
+  --surface: #1a2030;
+  --blue: #2563eb;
+  --blue-light: #3b82f6;
+  --blue-dim: #1d4ed8;
+  --blue-glow: rgba(37,99,235,0.18);
+  --blue-subtle: rgba(37,99,235,0.08);
+  --text: #f0f2f5;
+  --text-secondary: #8b95a8;
+  --text-muted: #4a5568;
+  --border: rgba(255,255,255,0.07);
+  --border-blue: rgba(37,99,235,0.3);
+  --font: 'Pretendard', -apple-system, sans-serif;
+  --radius: 12px;
+  --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =============================================
+   NAV
+   ============================================= */
+#main-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 48px;
+  background: rgba(10,12,16,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+.nav-logo:hover { color: var(--blue-light); }
+
+.nav-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color var(--transition);
+}
+.nav-back:hover { color: var(--blue-light); }
+.nav-back svg { transition: transform var(--transition); }
+.nav-back:hover svg { transform: translateX(-3px); }
+
+.hero-mockup {
+  position: absolute;
+  top: -10vh;
+  right: 0;
+  width: 44%;
+  height: calc(100% + 10vh);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-mockup-img {
+  height: 100%;
+  width: auto;
+  max-width: none;
+  display: block;
+  object-fit: contain;
+  object-position: right top;
+}
+@media (max-width: 900px) { .hero-mockup { display: none; } }
+
+/* =============================================
+   HERO
+   ============================================= */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 22vh 80px 32px;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 55% 50% at 75% 35%, rgba(37,99,235,0.13) 0%, transparent 60%),
+    radial-gradient(ellipse 35% 45% at 15% 75%, rgba(29,78,216,0.08) 0%, transparent 55%);
+}
+
+.hero-kicker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blue-light);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  animation: fadeUp 0.7s cubic-bezier(0.4,0,0.2,1) 0.05s forwards;
+}
+
+.hero-title {
+  font-size: clamp(52px, 7vw, 55px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 1;
+  max-width: 52%;
+  opacity: 0;
+  animation: fadeUp 0.7s cubic-bezier(0.4,0,0.2,1) 0.1s forwards;
+}
+.hero-title em {
+  display: inline-block;
+  font-style: italic;
+  background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  padding-right: 0.25em;
+}
+
+.hero-sub {
+  font-size: 17px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 46%;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  animation: fadeUp 0.7s cubic-bezier(0.4,0,0.2,1) 0.15s forwards;
+}
+
+/* 메타 + CTA 행 */
+.hero-bottom-row {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  max-width: 70%;
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  animation: fadeUp 0.7s cubic-bezier(0.4,0,0.2,1) 0.2s forwards;
+}
+
+.hero-meta-list {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.hero-meta-item dt {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.hero-meta-item dd {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 14px 28px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all var(--transition);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+.hero-cta:hover {
+  background: var(--blue-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(37,99,235,0.35);
+}
+.hero-cta svg { transition: transform var(--transition); }
+.hero-cta:hover svg { transform: translateX(4px); }
+
+/* KPI 행 */
+.hero-kpi-row {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+  max-width: 100%;
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  animation: fadeUp 0.7s cubic-bezier(0.4,0,0.2,1) 0.25s forwards;
+}
+.hero-kpi-item {
+  flex: 1;
+  min-width: 200px;
+  padding: 20px 28px 20px 0;
+  border-right: none;
+}
+.hero-kpi-num {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  display: block;
+}
+.hero-kpi-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =============================================
+   SECTIONS COMMON
+   ============================================= */
+section {
+  padding: 100px 80px;
+  position: relative;
+}
+
+.section-tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blue-light);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-tag span {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+.section-tag::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  max-width: 80px;
+}
+.section-heading {
+  font-size: clamp(28px, 3.5vw, 48px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+.section-heading em {
+  font-style: italic;
+  display: inline-block;
+  background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  padding-right: 0.25em;
+}
+.mobile-br { display: block; }
+
+.section-body {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.85;
+  margin-bottom: 48px;
+}
+
+/* fade-up 애니 */
+.fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-up.visible { opacity: 1; transform: none; }
+
+/* =============================================
+   01 — 앱 소개 (앱스토어 이미지 갤러리)
+   ============================================= */
+#app-gallery {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+
+/* appstore-grid / appstore-card — 단일 이미지로 교체됨 */
+
+/* 01 앱 소개 — 1행 2열 레이아웃 */
+.app-gallery-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  align-items: flex-start;
+  margin-top: 0;
+}
+.app-gallery-text {
+  /* 텍스트 영역: section-tag, heading, body 포함 */
+}
+.app-gallery-images {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+  width: 100%;
+}
+.app-gallery-images .img-wrap {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  width: 21%;
+  min-width: 270px;
+  cursor: zoom-in;
+  transition: border-color var(--transition), transform var(--transition);
+}
+.app-gallery-images .img-wrap:hover {
+  border-color: var(--border-blue);
+  transform: translateY(-3px);
+}
+.app-gallery-images .img-wrap img {
+  width: 100%;
+  display: block;
+  height: 250px;
+  object-fit: cover;
+  object-position: top;
+}
+.app-gallery-images .img-label {
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+@media (max-width: 900px) {
+  .app-gallery-layout { grid-template-columns: 1fr; gap: 40px; }
+  .app-gallery-text { width: 100%; }
+  .app-gallery-images { width: 100%; align-items: stretch; }
+  .app-gallery-images .img-wrap { width: 100%; min-width: 0; }
+}
+
+/* =============================================
+   02 — 디자인 시스템
+   ============================================= */
+#design-system {
+  border-top: 1px solid var(--border);
+}
+
+.ds-intro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+  margin-bottom: 64px;
+}
+
+.ds-principle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 8px;
+}
+.ds-principle-item {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 0 14px;
+  border-top: 1px solid var(--border);
+  padding: 20px 0;
+}
+.ds-principle-item:last-child { border-bottom: 1px solid var(--border); }
+.ds-principle-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue-light);
+  padding-top: 2px;
+}
+.ds-principle-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.ds-principle-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+/* DS 이미지 그리드 */
+.ds-image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+}
+.ds-image-grid .ds-image-card {
+  width: calc(50% - 10px);
+}
+
+.ds-image-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color var(--transition), transform var(--transition);
+  cursor: zoom-in;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+}
+.ds-image-card:hover {
+  border-color: var(--border-blue);
+  transform: translateY(-3px);
+}
+.ds-image-card img {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: block;
+  object-fit: cover;
+  object-position: top;
+}
+.ds-image-caption {
+  padding: 10px 18px;
+  font-size: 13px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* =============================================
+   03 — 개발 협업
+   ============================================= */
+#dev-collab {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+
+.collab-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 48px;
+}
+
+/* 07 Launch & After — 1행: collab-grid(2열 가로), 2행: before-after-grid(우측 배치) */
+.launch-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-top: 48px;
+}
+.launch-layout .collab-grid {
+  margin-top: 0;
+}
+.launch-layout .before-after-grid {
+  margin-top: 0;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .launch-layout .before-after-grid { width: 100%; }
+}
+
+.collab-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  transition: border-color var(--transition);
+}
+.collab-card:hover { border-color: var(--border-blue); }
+
+.collab-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--blue-subtle);
+  border: 1px solid var(--border-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue-light);
+  margin-bottom: 20px;
+}
+
+.collab-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+.collab-card-body {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.collab-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.collab-tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--blue-light);
+  background: var(--blue-subtle);
+  border: 1px solid var(--border-blue);
+  border-radius: 6px;
+  padding: 4px 12px;
+}
+
+/* 협업 프로세스 타임라인 */
+.collab-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 48px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-card);
+}
+.collab-timeline-item {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+.collab-timeline-item:last-child { border-bottom: none; }
+.collab-timeline-phase {
+  padding: 24px 28px;
+  background: var(--bg3);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.collab-timeline-phase-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.collab-timeline-phase-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--blue-light);
+}
+.collab-timeline-content {
+  padding: 24px 28px;
+}
+.collab-timeline-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.collab-timeline-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* =============================================
+   04 — CTA (케이스스터디로)
+   ============================================= */
+#cta-section {
+  border-top: 1px solid var(--border);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#cta-section::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(ellipse at center, rgba(37,99,235,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cta-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blue-light);
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-heading {
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+.cta-heading em {
+  font-style: italic;
+  display: inline-block;
+  background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 50%, #93c5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  padding-right: 0.25em;
+}
+
+.cta-sub {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin-bottom: 48px;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 0 40px;
+  height: 50px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: all var(--transition);
+  position: relative;
+  z-index: 1;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 24px rgba(37, 99, 235, 0.35);
+  justify-content: center;
+  width: 300px;
+}
+.cta-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #93c5fd 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.5);
+}
+.cta-btn svg { transition: transform var(--transition); }
+.cta-btn:hover svg { transform: translateX(4px); }
+
+/* =============================================
+   FOOTER
+   ============================================= */
+.page-footer {
+  padding: 40px 80px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg2);
+}
+.footer-copy {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* =============================================
+   LIGHTBOX
+   ============================================= */
+#lightbox { display:none; position:fixed; inset:0; z-index:9999; align-items:center; justify-content:center; }
+#lightbox.open { display:flex; }
+#lb-backdrop { position:absolute; inset:0; background:rgba(0,0,0,0.9); backdrop-filter:blur(8px); cursor:pointer; }
+#lb-img { position:relative; max-width:80vw; max-height:85vh; border-radius:12px; box-shadow:0 24px 80px rgba(0,0,0,0.6); object-fit:contain; }
+#lb-close { position:absolute; top:24px; right:24px; width:44px; height:44px; border-radius:50%; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.1); color:#fff; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:1; transition:background 0.2s; }
+#lb-close:hover { background:rgba(255,255,255,0.25); }
+
+/* =============================================
+   SCROLLBAR
+   ============================================= */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface); border-radius: 2px; }
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 1105px) {
+  .hero-kpi-row { flex-direction: column; flex-wrap: nowrap; max-width: 100%; }
+  .hero-kpi-item { flex: none; width: 100%; display: flex; flex-direction: row; align-items: center; gap: 5px; min-width: 0; padding: 12px 0; }
+  .hero-kpi-num { font-size: 18px; }
+  .hero-kpi-label { font-size: 11px; }
+}
+
+@media (max-width: 900px) {
+  #main-nav { padding: 16px 24px; }
+  #hero { padding: 80px 24px 60px; }
+  section { padding: 72px 24px; }
+  .ds-intro-grid { grid-template-columns: 1fr; gap: 40px; }
+  .collab-grid { grid-template-columns: 1fr; }
+  .hero-kpi-row { flex-wrap: nowrap; }
+  .hero-kpi-item { min-width: 0; padding: 20px 16px 20px 0; }
+  .page-footer { padding: 32px 24px; flex-direction: column; gap: 16px; text-align: center; }
+}
+
+@media (max-width: 600px) {
+  #hero { padding: 80px 20px 52px; }
+  section { padding: 52px 20px; }
+  .hero-sub { max-width: 100%; font-size: 15px; }
+  .hero-meta-list { gap: 15px; }
+  .hero-kpi-row { max-width: 100%; }
+  .hero-kpi-item { flex: none; width: 100%; padding: 12px 0; }
+  .section-body { font-size: 15px; }
+  .cta-sub { font-size: 15px; }
+  .cta-btn { width: 80%; font-size: 15px; }
+  .cta-btn:hover { background: linear-gradient(135deg, #1d4ed8 0%, #93c5fd 100%); box-shadow: 0 8px 32px rgba(37,99,235,0.5); }
+  .component-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .collab-timeline-item { grid-template-columns: 1fr; }
+  .collab-timeline-phase { border-right: none; border-bottom: 1px solid var(--border); }
+  .hero-bottom-row { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .page-footer { padding: 24px 20px; }
+}
+
+@media (max-width: 430px) {
+  #main-nav { padding: 12px 14px; }
+  section { padding: 48px 14px; }
+  #hero { padding: 70px 14px 48px; }
+  .hero-title { font-size: clamp(28px, 9vw, 44px); line-height: 1.15; }
+  .page-footer { padding: 22px 14px; }
+}
+
+@media (max-width: 390px) {
+  #main-nav { padding: 10px 12px; }
+  section { padding: 44px 12px; }
+  #hero { padding: 70px 12px 44px; }
+  .hero-title { font-size: clamp(26px, 8vw, 38px); }
+  .page-footer { padding: 20px 12px; }
+}
+
+@media (min-width: 1440px) {
+  .section-heading { font-size: clamp(32px, 2.6vw, 54px); }
+  #main-nav { padding: 20px clamp(48px, 4vw, 72px); }
+  #hero { padding: 22vh clamp(48px, 4vw, 88px) clamp(48px, 4vw, 64px); }
+  section { padding: clamp(88px, 6vw, 112px) clamp(48px, 4vw, 88px); }
+  .hero-sub { font-size: clamp(17px, 1.1vw, 19px); }
+  .page-footer { padding: 36px clamp(48px, 4vw, 88px); }
+}
+
+/* =============================================
+   실제 화면 캡션 카드 (홈 단독 / 2단 / 3단 / 인라인)
+   ============================================= */
+.screen-caption {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+}
+.screen-hero-wrap {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+.screen-hero-card {
+  width: 320px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-blue);
+  background: var(--bg-card);
+  cursor: zoom-in;
+  transition: transform var(--transition);
+}
+.screen-hero-card:hover { transform: translateY(-4px); }
+.screen-hero-card img { width: 100%; display: block; }
+
+/* ── 실제 화면 갤러리 카드 (전 섹션 공통) ──
+   key-row / components / rsv-states / 2up-compact×2 / edgecase 6곳에서 동일 사용
+   화면 디자인이므로 세로 비율을 살리고, 원본 비율 그대로(contain) 보여줌 */
+.screen-gallery-grid {
+  margin-top: 24px;
+  display: flex;
+  justify-content: left;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.screen-gallery-card {
+  width: 260px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  cursor: zoom-in;
+  transition: border-color var(--transition), transform var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+.screen-gallery-card:hover {
+  border-color: var(--border-blue);
+  transform: translateY(-3px);
+}
+.screen-gallery-card .screen-gallery-title {
+  padding: 12px 16px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.screen-gallery-card .screen-gallery-imgwrap {
+  width: 100%;
+  height: 430px;
+  background: #14161b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.screen-gallery-card .screen-gallery-imgwrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+.screen-gallery-card .screen-caption {
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  height: 100px;
+}
+@media (max-width: 900px) {
+  .screen-gallery-card { width: calc(50% - 10px); }
+  .screen-gallery-card .screen-gallery-imgwrap { height: 380px; }
+}
+@media (max-width: 600px) {
+  .screen-gallery-card { width: 100%; }
+}
+
+/* Before / After 비교 (case-study.html과 동일 패턴) */
+.before-after-grid {
+  display: grid;
+  grid-template-columns: 0.3fr 0.2fr 1fr;
+  gap: 0;
+  align-items: start;
+  margin-top: 24px;
+}
+.ba-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 60px;
+}
+.ba-block {
+  border-radius: 12px;
+  padding: 16px;
+}
+.ba-block.is-before { background: rgba(239,68,68,0.04); }
+.ba-block.is-after { background: rgba(37,99,235,0.05); }
+.ba-block-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.ba-block.is-before .ba-block-label { color: #ef4444; }
+.ba-block.is-after .ba-block-label { color: var(--blue-light); }
+.ba-after-stack {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+.ba-sub-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+@media (max-width: 700px) {
+  .before-after-grid { grid-template-columns: 1fr; }
+  .ba-arrow { padding-top: 0; transform: rotate(90deg); }
+  .ba-after-stack { flex-direction: column; }
+}
+
+.overview-02-wrap {
+  margin-top: 42px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  cursor: zoom-in;
+}
+.overview-02-wrap img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+.overview-02-wrap .overview-02-label {
+  padding: 14px 20px;
+}
+.overview-02-wrap .overview-02-label span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .screen-hero-card { width: 100%; max-width: 320px; }
+}
+
+/* 03 Information Architecture — 1행 2열(좌: 텍스트, 우: IA·Flow 세로 스택) */
+.ia-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+.ia-images {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* QA 피드백 이미지 카드 — ds-image-card / component-card 스타일 통일 */
+.qa-image-card {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  cursor: zoom-in;
+  transition: border-color var(--transition), transform var(--transition);
+}
+.qa-image-card:hover {
+  border-color: var(--border-blue);
+  transform: translateY(-3px);
+}
+.qa-image-card img { width: 100%; display: block; }
+.component-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.component-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color var(--transition), transform var(--transition);
+  cursor: zoom-in;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+}
+.component-card:hover {
+  border-color: var(--border-blue);
+  transform: translateY(-3px);
+}
+.component-img-wrap {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.component-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+.component-label {
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* =============================================
+   03 핸드오프 & QA / 04 협업 / 05 런칭
+   ============================================= */
+#handoff-qa {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+#collaboration {
+  border-top: 1px solid var(--border);
+}
+#launch {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 900px) {
+  .component-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .component-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <div id="lb-backdrop"></div>
+  <button id="lb-close">✕</button>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<!-- ── NAV ── -->
+<nav id="main-nav">
+  <a class="nav-logo" href="index.html">ELLIE</a>
+  <a class="nav-back" href="index.html">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    홈으로 돌아가기
+  </a>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-bg"></div>
+
+  <!-- hero-mockup 임시 비노출
+  <div class="hero-mockup">
+    <img src="images/screens/thumb.png" alt="Club Minish App Mockup" class="hero-mockup-img">
+  </div>
+  -->
+
+  <div class="hero-kicker">Product Design · Club Minish · 2023–2024</div>
+
+  <h1 class="hero-title">
+    클럽미니쉬<br><em>런칭 여정</em>
+  </h1>
+
+  <p class="hero-sub">
+    0에서 1까지. 디자인 시스템 구축부터 앱스토어 출시까지.<br>
+    실제 서비스가 만들어지는 과정을 기록했습니다.
+  </p>
+
+  <div class="hero-bottom-row">
+    <dl class="hero-meta-list">
+      <div class="hero-meta-item">
+        <dt>Role</dt>
+        <dd>메인 Product Designer</dd>
+      </div>
+      <div class="hero-meta-item">
+        <dt>Platform</dt>
+        <dd>iOS / Android · Web(피초대인)</dd>
+      </div>
+      <div class="hero-meta-item">
+        <dt>Timeline</dt>
+        <dd>2023.05 – 2024.05</dd>
+      </div>
+      <div class="hero-meta-item">
+        <dt>Team</dt>
+        <dd>PM 1 · Designer 1 · Dev 2</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="hero-kpi-row">
+    <div class="hero-kpi-item">
+      <span class="hero-kpi-num">0 → 1</span>
+      <span class="hero-kpi-label">신규 앱 기획부터 런칭</span>
+    </div>
+
+    <div class="hero-kpi-item">
+      <span class="hero-kpi-num">iOS / Android · Web</span>
+      <span class="hero-kpi-label">동시 출시</span>
+    </div>
+    <div class="hero-kpi-item">
+      <span class="hero-kpi-num">8</span>
+      <span class="hero-kpi-label">핵심 컴포넌트 · 상태 4단계 정의</span>
+    </div>
+    <div class="hero-kpi-item">
+      <span class="hero-kpi-num">Dev Mode</span>
+      <span class="hero-kpi-label">Figma 핸드오프 · QA</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── 01 앱 소개 ── -->
+<section id="app-gallery">
+  <div class="app-gallery-layout">
+    <!-- 왼쪽: 텍스트 -->
+    <div class="app-gallery-text">
+      <div class="section-tag">01 <span>App Overview</span></div>
+      <h2 class="section-heading">실제로 <em>출시된 앱</em></h2>
+      <p class="section-body" style="margin-bottom: 0;">
+        클럽미니쉬는 미니쉬 치과의 초대인(기존 고객)이 지인을 초대하고, 상담 예약부터 리워드 수령까지 하나의 앱에서 처리할 수 있는 멤버십 기반 헬스케어 서비스입니다.
+      </p>
+    </div>
+
+    <!-- 오른쪽: 앱 화면 6종 -->
+    <div class="app-gallery-images">
+      <!-- 앱 화면 6종 — 이미지 작업 후 src 교체 -->
+      <div class="img-wrap">
+        <img src="images/project1/screen/overview_01.png" alt="Club Minish 앱 화면 6종">
+      </div>
+    </div>
+  </div>
+
+  <!-- 앱스토어 실제 화면 캡처 — 전체 너비 -->
+  <div class="overview-02-wrap">
+    <img src="images/project1/screen/overview_02.png" alt="App Store · Google Play 출시 화면">
+    <div class="overview-02-label">
+      <span>App Store · Google Play</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── 02 주요 화면 ── -->
+<section id="key-screens">
+  <div class="section-tag">02 <span>Key Screens</span></div>
+  <h2 class="section-heading">서비스의 핵심을 <br class="mobile-br"><em>보여주는 화면</em></h2>
+  <p class="section-body">
+    홈 · 리더보드 · 혜택 세 화면은 클럽미니쉬의 멤버십 기반 초대 서비스 구조를 가장 압축적으로 보여줍니다.
+  </p>
+
+  <!-- 실제 화면 — 홈 · 리더보드 · 혜택 1행 3열 -->
+  <div class="screen-gallery-grid">
+    <div class="screen-gallery-card fade-up">
+      <div class="screen-gallery-title">홈 화면</div>
+      <div class="screen-gallery-imgwrap"><img src="images/project1/screen/key_home.png" alt="클럽미니쉬 홈 화면"></div>
+      <div class="screen-caption">현재 진행 중인 초대 상태를 한 화면에서 즉시 확인하도록, 카드 1번 슬롯에 진행 중 초대를 고정 배치했습니다.</div>
+    </div>
+    <div class="screen-gallery-card fade-up">
+      <div class="screen-gallery-title">리더보드</div>
+      <div class="screen-gallery-imgwrap"><img src="images/project1/screen/key_leaderboard.png" alt="리더보드 화면"></div>
+      <div class="screen-caption">초대 기반 서비스의 동기 부여를 위해, 누적 초대 수보다 친구 목록과 실시간 활동 로그를 우선 노출하도록 설계했습니다.</div>
+    </div>
+    <div class="screen-gallery-card fade-up">
+      <div class="screen-gallery-title">혜택</div>
+      <div class="screen-gallery-imgwrap"><img src="images/project1/screen/key_benefit.png" alt="혜택 화면"></div>
+      <div class="screen-caption">보유 포인트와 사용 가능한 혜택을 상단에 묶어, 받은 혜택을 다음 행동(예약)으로 바로 이어지게 만들었습니다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 03 정보 구조 ── -->
+<section id="information-architecture">
+  <div class="ia-layout">
+    <div>
+      <div class="section-tag">03 <span>Information Architecture</span></div>
+      <h2 class="section-heading">구조부터 <br class="mobile-br"><em>설계했습니다</em></h2>
+      <p class="section-body">
+        PM과 함께 전체 화면 구조와 초대 플로우의 큰 방향을 정의하고, 이를 화면 단위로 구체화 했습니다.
+      </p>
+    </div>
+    <div class="ia-images">
+      <div class="qa-image-card">
+        <img src="images/project1/arch/IA.png" alt="Information Architecture">
+        <div class="ds-image-caption">IA</div>
+      </div>
+      <div class="qa-image-card">
+        <img src="images/project1/arch/flow_invitation.png" alt="Invitation Flow">
+        <div class="ds-image-caption">Invitation Flow</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 04 디자인 시스템 ── -->
+<section id="design-system">
+  <div class="section-tag">04 <span>Design System</span></div>
+  <h2 class="section-heading">일관된 경험을 만드는 <br class="mobile-br"><em>기반 작업</em></h2>
+  <p class="section-body">
+    0→1 프로젝트이기 때문에 시각 언어를 처음부터 정의해야 했습니다.<br>
+    컬러·타이포·간격 시스템을 먼저 확정하고, 이를 기반으로 재사용 가능한 컴포넌트를 구축해 모든 화면 설계에 적용했습니다.
+  </p>
+
+  <!-- 기반 시스템 -->
+  <div class="ds-intro-grid">
+    <div>
+      <div class="ds-principle-list">
+        <div class="ds-principle-item fade-up">
+          <div class="ds-principle-num">01</div>
+          <div>
+            <div class="ds-principle-title">Grayscale 10단계</div>
+            <div class="ds-principle-desc">배경·카드·텍스트를 위한 10단계 그레이스케일 팔레트. 화면 간 일관된 계층 구조를 유지하기 위해 각 역할별로 값을 고정했습니다.</div>
+          </div>
+        </div>
+        <div class="ds-principle-item fade-up">
+          <div class="ds-principle-num">02</div>
+          <div>
+            <div class="ds-principle-title">4px 스페이싱 시스템</div>
+            <div class="ds-principle-desc">모든 여백과 간격을 4px 단위로 통일. 개발자가 Figma Dev Mode에서 수치를 직관적으로 읽을 수 있도록 설계했습니다.</div>
+          </div>
+        </div>
+        <div class="ds-principle-item fade-up">
+          <div class="ds-principle-num">03</div>
+          <div>
+            <div class="ds-principle-title">한/영 타이포그래피</div>
+            <div class="ds-principle-desc">한국어(Pretendard)와 영어(Roboto)를 각각 지정하고 6단계 타입 스케일을 정의. 멀티 언어 서비스 특성을 반영했습니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ds-image-grid">
+      <div class="ds-image-card fade-up">
+        <img src="images/project1/ds/stm_grayscale.png" alt="Grayscale">
+        <div class="ds-image-caption">Grayscale Palette</div>
+      </div>
+      <div class="ds-image-card fade-up">
+        <img src="images/project1/ds/stm_spacing.png" alt="Spacing System">
+        <div class="ds-image-caption">Spacing System</div>
+      </div>
+      <div class="ds-image-card fade-up">
+        <img src="images/project1/ds/stm_typography-ko.png" alt="Typography KO">
+        <div class="ds-image-caption">Typography · Korean</div>
+      </div>
+      <div class="ds-image-card fade-up">
+        <img src="images/project1/ds/stm_typography-en.png" alt="Typography EN">
+        <div class="ds-image-caption">Typography · English</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 컴포넌트 -->
+  <div style="margin-top:64px;">
+    <div style="margin-bottom:32px;">
+      <div class="section-tag" style="margin-bottom:12px;">Components</div>
+      <p style="font-size:15px; color:var(--text-secondary); line-height:1.8; max-width:640px;">
+        Button · Input · Alert · Toast · Card 등 핵심 컴포넌트를 상태별로 정의했습니다. 각 컴포넌트는 empty · typing · error · complete 상태를 모두 커버해 개발자가 별도 해석 없이 바로 구현할 수 있도록 구성했습니다.
+      </p>
+    </div>
+    <div class="component-grid">
+      <div class="component-card fade-up">
+        <div class="component-img-wrap">
+          <img src="images/project1/ds/component_input.png" alt="Input Field 컴포넌트">
+        </div>
+        <div class="component-label">Input Field — 상태별 정의</div>
+      </div>
+      <div class="component-card fade-up">
+        <div class="component-img-wrap">
+          <img src="images/project1/ds/component_btn.png" alt="Button · Alert · Toast 컴포넌트">
+        </div>
+        <div class="component-label">Button · Alert · Toast</div>
+      </div>
+      <div class="component-card fade-up">
+        <div class="component-img-wrap">
+          <img src="images/project1/ds/component_alert.png" alt="Card · Inventory 컴포넌트">
+        </div>
+        <div class="component-label">Card · Inventory</div>
+      </div>
+      <div class="component-card fade-up">
+        <div class="component-img-wrap">
+          <img src="images/project1/ds/component_asset.png" alt="에셋 · Status 컴포넌트">
+        </div>
+        <div class="component-label">Asset · Status</div>
+      </div>
+    </div>
+    <div style="margin-top:20px; padding:24px 28px; background:var(--bg-card); border:1px solid var(--border); border-radius:16px;">
+      <div class="section-tag" style="margin-bottom:12px;">Trade-off Note</div>
+      <p style="font-size:14px; color:var(--text-muted); line-height:1.8; margin:0;">
+        토큰 시스템은 2인 개발팀·MVP1 일정 트레이드오프로 의식적으로 Post-launch 백로그에 등록했습니다.<br>
+        <span style="color:var(--text-secondary);">다음 스프린트에서 의도한 토큰 설계: Color / Spacing / Type 3축, JSON 토큰 + Figma Variables 연동 계획.</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- 컴포넌트 실사용 — 입력 폼 컴포넌트가 실제 화면에서 동작하는 모습 -->
+  <div style="margin-top:56px;">
+    <div style="margin-bottom:24px;">
+      <div class="section-tag" style="margin-bottom:12px;">Components in Use</div>
+      <p style="font-size:15px; color:var(--text-secondary); line-height:1.8; max-width:640px;">
+        Input · Calendar · TextArea 컴포넌트가 실제 예약/문의 화면에서 어떻게 동작하는지입니다. 정의된 상태값(empty · typing · error · complete)이 실 화면에서 그대로 재사용됐습니다.
+      </p>
+    </div>
+    <div class="screen-gallery-grid">
+      <div class="screen-gallery-card fade-up">
+        <div class="screen-gallery-title">날짜/시간 선택</div>
+        <div class="screen-gallery-imgwrap"><img src="images/project1/screen/reuse_01.png" alt="예약 화면 - 날짜/시간 선택 컴포넌트"></div>
+        <div class="screen-caption">날짜·시간 선택 컴포넌트를 한 화면에서 단계적으로 노출해, 선택 흐름이 끊기지 않도록 했습니다.</div>
+      </div>
+      <div class="screen-gallery-card fade-up">
+        <div class="screen-gallery-title">예약자 정보 입력</div>
+        <div class="screen-gallery-imgwrap"><img src="images/project1/screen/reuse_02.png" alt="예약 화면 - 예약자 정보 입력 컴포넌트"></div>
+        <div class="screen-caption">Input 컴포넌트의 typing · complete 상태를 예약자 정보 폼에 그대로 적용해 일관성을 유지했습니다.</div>
+      </div>
+      <div class="screen-gallery-card fade-up">
+        <div class="screen-gallery-title">문의하기</div>
+        <div class="screen-gallery-imgwrap"><img src="images/project1/screen/reuse_03.png" alt="문의 화면 - TextArea 및 파일 첨부 컴포넌트"></div>
+        <div class="screen-caption">문의 폼에도 동일한 Input · TextArea 컴포넌트를 재사용해, 화면이 달라도 입력 경험은 같게 만들었습니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 예약 상태 4단계 — 컴포넌트 상태값 정의의 실증 -->
+  <div style="margin-top:56px;">
+    <div style="margin-bottom:24px;">
+      <div class="section-tag" style="margin-bottom:12px;">Reservation Status · 4 States</div>
+      <p style="font-size:15px; color:var(--text-secondary); line-height:1.8; max-width:640px;">
+        예약 1건의 생애주기를 신청완료 · 확정 · 완료 · 취소 4개 상태로 정의하고, 각 상태에서 사용자가 취할 수 있는 행동(취소, 변경, 재이용)을 다르게 설계했습니다.
+      </p>
+    </div>
+    <div class="screen-gallery-grid">
+      <div class="screen-gallery-card fade-up">
+        <div class="screen-gallery-title">신청완료</div>
+        <div class="screen-gallery-imgwrap"><img src="images/project1/screen/status_rsv-applied.png" alt="예약 신청 완료 상태"></div>
+        <div class="screen-caption">신청완료. 지점 확인 전 단계로, 예약 취소 · 변경만 가능하게 제한했습니다.</div>
+      </div>
+      <div class="screen-gallery-card fade-up">
+        <div class="screen-gallery-title">확정</div>
+        <div class="screen-gallery-imgwrap"><img src="images/project1/screen/status_rsv-confirmed.png" alt="예약 확정 상태"></div>
+        <div class="screen-caption">확정. 변경 대신 취소만 남겨 확정 이후의 책임 소재를 명확히 했습니다.</div>
+      </div>
+      <div class="screen-gallery-card fade-up">
+        <div class="screen-gallery-title">완료</div>
+        <div class="screen-gallery-imgwrap"><img src="images/project1/screen/status_rsv-last.png" alt="지난 예약 완료 상태"></div>
+        <div class="screen-caption">완료. 모든 행동 버튼을 제거해 더 이상 조작이 불필요한 상태임을 명시했습니다.</div>
+      </div>
+      <div class="screen-gallery-card fade-up">
+        <div class="screen-gallery-title">취소</div>
+        <div class="screen-gallery-imgwrap"><img src="images/project1/screen/status_rsv-canceled.png" alt="예약 취소 상태"></div>
+        <div class="screen-caption">취소. 환불 포인트와 수수료를 함께 표기해 사용자가 별도 문의 없이 결과를 확인하게 했습니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 05 핸드오프 & QA ── -->
+<section id="handoff-qa">
+  <div class="section-tag">05 <span>Handoff &amp; QA</span></div>
+  <h2 class="section-heading">설계 의도가 <br class="mobile-br"><em>그대로 구현되기까지</em></h2>
+  <p class="section-body">
+    Figma Dev Mode를 활용해 별도 스펙 문서 없이 개발자가 Figma에서 직접 수치·상태·인터랙션을 읽을 수 있는 구조를 만들었습니다. 런칭 전 기기별 QA를 직접 진행해 디자인 의도가 구현에 반영됐는지 검수했습니다.
+  </p>
+
+  <div class="collab-grid">
+    <div class="collab-card fade-up">
+      <div class="collab-card-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <div class="collab-card-title">Figma Dev Mode 핸드오프</div>
+      <div class="collab-card-body">컴포넌트별 스펙, 상태값, 인터랙션을 Dev Mode에서 직접 확인할 수 있도록 정리. 별도 문서 없이 Figma 하나로 개발이 가능한 구조를 만들었습니다. 스펙 해석에 드는 커뮤니케이션 비용을 줄이는 것이 목표였습니다.</div>
+      <div class="collab-tag-row">
+        <span class="collab-tag">Figma Dev Mode</span>
+        <span class="collab-tag">Auto Layout</span>
+        <span class="collab-tag">컴포넌트 상태 정의</span>
+      </div>
+    </div>
+    <div class="collab-card fade-up">
+      <div class="collab-card-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <div class="collab-card-title">기기별 QA · 이슈 피드백</div>
+      <div class="collab-card-body">iOS · Android 실기기에서 직접 QA를 진행했습니다. 디자인 의도와 다르게 구현된 부분은 스크린샷과 함께 구체적인 수정 지시로 전달해, 재작업 루프를 최소화했습니다.</div>
+      <div class="collab-tag-row">
+        <span class="collab-tag">iOS · Android QA</span>
+        <span class="collab-tag">이슈 피드백</span>
+        <span class="collab-tag">구현 검수</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 상태 표시 스텝바 — 핸드오프 난이도와 직결되는 상태값 변화 사례 -->
+  <div style="margin-top:40px;">
+    <div class="section-tag" style="margin-bottom:16px;">상태값 변화 · 핸드오프 사례</div>
+    <div class="screen-gallery-grid">
+      <div class="screen-gallery-card fade-up">
+        <div class="screen-gallery-title">상담신청 완료</div>
+        <div class="screen-gallery-imgwrap"><img src="images/project1/screen/status-step_01.png" alt="상담신청 완료 스텝바"></div>
+        <div class="screen-caption">상담신청 완료. 전화상담은 백오피스에서 즉시 처리되어 별도 화면이 없으므로, 스텝바 위치로만 진행 중임을 인지하게 했습니다.</div>
+      </div>
+      <div class="screen-gallery-card fade-up">
+        <div class="screen-gallery-title">방문확정</div>
+        <div class="screen-gallery-imgwrap"><img src="images/project1/screen/status-step_02.png" alt="방문확정 스텝바"></div>
+        <div class="screen-caption">방문확정. 전화상담 단계를 사용자가 직접 보지 못해도, 스텝바가 채워진 상태로 "건너뛴 게 아니라 처리됐다"는 것을 보여줍니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QA 피드백 이미지 -->
+  <div style="margin-top: 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+    <div class="qa-image-card">
+      <img src="images/project1/qa/feedback_01.png" alt="QA 피드백 01">
+    </div>
+    <div class="qa-image-card">
+      <img src="images/project1/qa/feedback_02.png" alt="QA 피드백 02">
+    </div>
+    <div class="qa-image-card">
+      <img src="images/project1/qa/feedback_03.png" alt="QA 피드백 03">
+    </div>
+  </div>
+</section>
+
+<!-- ── 06 원격 협업 ── -->
+<section id="collaboration">
+  <div class="section-tag">06 <span>Remote Collaboration</span></div>
+  <h2 class="section-heading">원격의 제약을 <br class="mobile-br"><em>구조로 극복했습니다</em></h2>
+  <p class="section-body">
+    해외 지사 개발팀과 물리적으로 떨어진 환경에서 협업했습니다. 실시간 구두 소통이 제한된 만큼, 디자인 의도를 오해 없이 전달하는 것이 핵심 과제였습니다.
+  </p>
+
+  <div class="collab-timeline">
+    <div class="collab-timeline-item fade-up">
+      <div class="collab-timeline-phase">
+        <div class="collab-timeline-phase-label">방식</div>
+        <div class="collab-timeline-phase-name">시각화</div>
+      </div>
+      <div class="collab-timeline-content">
+        <div class="collab-timeline-title">텍스트 대신 플로우 다이어그램으로 전달</div>
+        <div class="collab-timeline-desc">말로 설명하기 어려운 인터랙션과 상태 변화는 플로우 다이어그램과 화면 어노테이션으로 시각화했습니다. '만료되거나 이미 사용된 초대장 링크에 들어왔을 때 어떻게 보여줄까?' 같은 엣지 케이스는 Figma 안에 상태별 화면(정상 · 만료 · 사용됨 · 오류)을 함께 구조화해 전달해, "이렇게 해주세요"가 아니라 "이 링크가 이 상태일 때 이렇게 보여야 합니다"를 그림으로 만들었습니다.</div>
+      </div>
+    </div>
+    <div class="collab-timeline-item fade-up">
+      <div class="collab-timeline-phase">
+        <div class="collab-timeline-phase-label">방식</div>
+        <div class="collab-timeline-phase-name">구조화</div>
+      </div>
+      <div class="collab-timeline-content">
+        <div class="collab-timeline-title">QA 피드백을 맥락과 함께 구조화</div>
+        <div class="collab-timeline-desc">모든 피드백과 QA 이슈는 다우오피스로 주고받았습니다. 해외 지사 개발팀과는 영어로, 국내 PM과는 한국어로 맥락을 구분해 전달했고, 단순 수정 요청 나열 대신 어떤 화면의 어떤 상태에서 발생하는 문제인지를 함께 명시해 재질문이 발생하지 않도록 했습니다.</div>
+      </div>
+    </div>
+    <div class="collab-timeline-item fade-up">
+      <div class="collab-timeline-phase">
+        <div class="collab-timeline-phase-label">방식</div>
+        <div class="collab-timeline-phase-name">설득력</div>
+      </div>
+      <div class="collab-timeline-content">
+        <div class="collab-timeline-title">근거 있는 디자인 결정으로 신뢰 구축</div>
+        <div class="collab-timeline-desc">원격 환경에서는 "왜 이렇게 설계했는가"를 문서로 남겨야 했습니다. 예를 들어 인증 단계 제거 결정 시, 유저 인터뷰 인용 3건과 보안 리스크 한 줄을 함께 첨부해 근거를 전달했고, 이 과정이 개발팀과의 신뢰 관계를 만들었습니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 엣지 케이스 — 초대장 링크 상태별 화면 4종 -->
+  <div style="margin-top:40px;">
+    <div class="section-tag" style="margin-bottom:16px;">초대장 링크 · 상태별 엣지 케이스</div>
+    <div class="screen-gallery-grid">
+      <div class="screen-gallery-card fade-up">
+        <div class="screen-gallery-title">정상</div>
+        <div class="screen-gallery-imgwrap"><img src="images/project1/screen/edge_01.png" alt="초대장 링크 정상 상태"></div>
+        <div class="screen-caption">정상. 받은 사람이 처음 링크를 열었을 때의 기본 진입 화면입니다.</div>
+      </div>
+      <div class="screen-gallery-card fade-up">
+        <div class="screen-gallery-title">만료</div>
+        <div class="screen-gallery-imgwrap"><img src="images/project1/screen/edge_02.png" alt="초대장 링크 만료 상태"></div>
+        <div class="screen-caption">만료. 유효기간이 지난 초대장은 카드를 무채색으로 바꿔 즉시 구분되게 했습니다.</div>
+      </div>
+      <div class="screen-gallery-card fade-up">
+        <div class="screen-gallery-title">사용됨</div>
+        <div class="screen-gallery-imgwrap"><img src="images/project1/screen/edge_03.png" alt="초대장 링크 사용됨 상태"></div>
+        <div class="screen-caption">사용됨. 이미 수락된 초대장임을 알려, 같은 링크로 중복 신청하는 혼란을 막았습니다.</div>
+      </div>
+      <div class="screen-gallery-card fade-up">
+        <div class="screen-gallery-title">오류</div>
+        <div class="screen-gallery-imgwrap"><img src="images/project1/screen/edge_04.png" alt="초대장 링크 오류 상태"></div>
+        <div class="screen-caption">오류. 잘못된 주소로 들어온 경우를 대비해 별도의 안내 문구와 재확인 경로를 정의했습니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 07 런칭 ── -->
+<section id="launch">
+  <div class="section-tag">07 <span>Launch &amp; After</span></div>
+  <h2 class="section-heading">출시 그리고 <em>그 이후</em></h2>
+  <p class="section-body">
+    iOS / Android · Web(피초대인) 출시 후 첫 주 실사용 피드백을 직접 수집하고 대응했습니다. 런칭이 끝이 아니라 개선 사이클의 시작이었습니다.
+  </p>
+
+  <div class="launch-layout">
+    <div class="collab-grid">
+      <div class="collab-card fade-up">
+        <div class="collab-card-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="collab-card-title">
+          사용자 멘탈 모델 변화
+          <span style="display:inline-block; font-size:10px; font-weight:600; color:var(--text-muted); background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:4px; padding:1px 4px; vertical-align:middle;">CS 매니저 구두 피드백 기준 정성 관찰(GA 미비)</span>
+        </div>
+        <div class="collab-card-body">예약 완료 화면에 3단계 스텝 안내를 추가한 이후, "제가 예약이 된 건가요?" 류의 반복 확인 문의가 눈에 띄게 줄었습니다. 상태 표시가 사용자의 불안을 없애고, 다음에 해야 할 것을 알게 만드는 설계 효과를 실운영에서 확인한 사례입니다.</div>
+        <div class="collab-tag-row">
+          <span class="collab-tag">사용자 학습</span>
+          <span class="collab-tag">상태 인지 개선</span>
+        </div>
+      </div>
+      <div class="collab-card fade-up">
+        <div class="collab-card-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="collab-card-title">
+          운영 사이드 임팩트
+        </div>
+        <div class="collab-card-body">CS 운영 확인 포인트를 5단계 → 3단계로 재구조화한 결과, CS 매니저의 1건당 처리 시간이 줄었습니다. 사용자 플로우를 바꾼 결정이 운영팀의 업무 구조에도 직접 영향을 준 사이드 임팩트였습니다.</div>
+        <div class="collab-tag-row">
+          <span class="collab-tag">운영 학습</span>
+          <span class="collab-tag">CS 프로세스 단축</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 예약 완료 · 진행 스텝바 — "제가 예약이 된 건가요?" 문의에 응답한 실제 화면 (Before/After) -->
+    <div class="before-after-grid">
+      <div class="ba-block is-before">
+        <div class="ba-block-label">Before · 단일 완료 화면</div>
+        <div class="screen-gallery-card fade-up">
+          <div class="screen-gallery-title">예약 신청 완료</div>
+          <div class="screen-gallery-imgwrap"><img src="images/project1/screen/launch_as-is.png" alt="AS-IS 예약 신청 완료 화면"></div>
+          <div class="screen-caption">"제가 예약이 된 건가요?"라는 반복 문의에 직접 응답하기 전, 신청 완료만 알리는 단일 화면이었습니다.</div>
+        </div>
+      </div>
+
+      <div class="ba-arrow">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </div>
+
+      <div class="ba-block is-after">
+        <div class="ba-block-label">After · 진행 스텝바 추가</div>
+        <div class="ba-after-stack">
+          <div class="screen-gallery-card fade-up">
+            <div class="screen-gallery-title">신청 직후 상태 표시</div>
+            <div class="screen-gallery-imgwrap"><img src="images/project1/screen/launch_to-be_01.png" alt="TO-BE 신청 직후 진행 스텝바"></div>
+            <div class="screen-caption">신청 완료 즉시 3단계 스텝바로 현재 위치를 보여주고, 예상 대기 시간까지 함께 안내합니다.</div>
+          </div>
+          <div class="screen-gallery-card fade-up">
+            <div class="screen-gallery-title">확정 후 상태 업데이트</div>
+            <div class="screen-gallery-imgwrap"><img src="images/project1/screen/launch_to-be_02.png" alt="TO-BE 확정 후 진행 스텝바"></div>
+            <div class="screen-caption">CS가 확정 처리하면 스텝바 전체가 완료로 업데이트되어, 초대장이 지금 어디까지 진행됐는지 한눈에 보여줍니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:32px; padding:24px 28px; background:var(--bg-card); border:1px solid var(--border); border-radius:16px;">
+    <div style="font-size:11px; font-weight:700; letter-spacing:0.1em; color:var(--text-muted); text-transform:uppercase; margin-bottom:12px;">Note</div>
+    <p style="font-size:14px; color:var(--text-muted); line-height:1.8; margin:0;">
+      UX 의사결정 근거와 UT 수치는 <a href="case-study.html" style="color:var(--blue-light); text-decoration:none;">케이스스터디</a>에서 확인할 수 있습니다.
+    </p>
+    <p style="font-size:14px; color:var(--text-muted); line-height:1.8;">
+      GA 이벤트를 설계 단계에서 합의하지 못해 라이브 배포 후 단계별 이탈률을 추적하지 못했습니다. 다음 사이클에서는 릴리즈 -2주 시점에 PM·개발팀과 핵심 퍼널 4개를 사전 정의하겠습니다.
+    </p>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section id="cta-section">
+  <p class="cta-label">Case Study</p>
+  <h2 class="cta-heading">하나의 화면이 만들어지기까지<br><em>설계 뒤의 생각들</em></h2>
+  <p class="cta-sub">예약 플로우 재설계 과정과 <br class="mobile-br">UX 의사결정의 근거를 담았습니다.</p>
+  <a class="cta-btn" href="case-study.html">
+    케이스스터디 보기
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  </a>
+</section>
+
+<!-- ── FOOTER ── -->
+<div class="page-footer">
+  <div class="footer-copy">
+    © 2026 Product Designer &nbsp;·&nbsp; Yu Dabin (Ellie) &nbsp;·&nbsp;
+    <a href="https://www.linkedin.com/in/ellie-ds" target="_blank"
+       style="color:var(--text-muted);text-decoration:none;transition:color 0.2s;"
+       onmouseover="this.style.color='var(--blue-light)'"
+       onmouseout="this.style.color='var(--text-muted)'">LinkedIn</a>
+  </div>
+  <a class="nav-back" href="index.html">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    홈으로 돌아가기
+  </a>
+</div>
+
+<script>
+// Fade-up 애니메이션
+const fadeObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-up').forEach(el => fadeObserver.observe(el));
+
+// 라이트박스
+document.getElementById('lb-backdrop').onclick = () => document.getElementById('lightbox').classList.remove('open');
+document.getElementById('lb-close').onclick = () => document.getElementById('lightbox').classList.remove('open');
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open'); });
+
+document.querySelectorAll('.ds-image-card img, .component-img-wrap img, .qa-image-card img, .app-gallery-images .img-wrap img, .overview-02-wrap img, .screen-card img, .screen-hero-card img, .screen-gallery-imgwrap img').forEach(img => {
+  img.addEventListener('click', () => {
+    document.getElementById('lb-img').src = img.src;
+    document.getElementById('lightbox').classList.add('open');
+  });
+});
+</script>
+</body>
+</html>
